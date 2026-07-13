@@ -155,21 +155,35 @@ class SIPCallDialog extends LitElement {
                     display: none;
                 }
 
+                .call-container {
+                    height: 100dvh;
+                    overflow: hidden;
+                    position: relative;
+                }
+
                 .content {
                     min-height: 0;
-                    height: calc(100vh - 4rem);
-                    max-height: calc(100vh - 4rem);
+                    height: 100%;
+                    max-height: none;
                 }
 
                 .bottom-row {
+                    background: rgba(0, 0, 0, 0.6);
+                    border-top: 0;
+                    bottom: 0;
+                    box-sizing: border-box;
+                    left: 0;
                     padding: 4px 8px;
+                    position: absolute;
+                    right: 0;
+                    z-index: 1;
                 }
 
                 .deny-button,
                 .accept-button,
                 .audio-button {
-                    --mdc-icon-button-size: 48px;
-                    --mdc-icon-size: 24px;
+                    --mdc-icon-button-size: 44px;
+                    --mdc-icon-size: 22px;
                 }
             }
 
@@ -523,7 +537,7 @@ class SIPCallDialog extends LitElement {
                         </ha-dropdown-item>
                     </ha-dropdown>
                 </ha-dialog-header>
-                <div tabindex="-1" dialogInitialFocus>
+                <div tabindex="-1" dialogInitialFocus class="call-container">
                     <div class="content">
                         <div id="audioVisualizer" style="display: ${
                             sipCore.callState !== CALLSTATE.IDLE && !camera && sipCore.remoteVideoStream === null
