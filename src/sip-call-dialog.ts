@@ -135,7 +135,8 @@ class SIPCallDialog extends LitElement {
             }
 
             @media (max-width: 600px), (max-height: 600px) {
-                ha-dialog {
+                ha-dialog,
+                ha-dialog[large] {
                     --dialog-surface-margin-top: 0px;
                     --mdc-dialog-min-width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
                     --mdc-dialog-max-width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
@@ -146,14 +147,29 @@ class SIPCallDialog extends LitElement {
                 }
 
                 /*
-                 * A 16:9 video can otherwise overflow short displays once the
-                 * dialog header and call controls are accounted for. Keep the
-                 * video inside the remaining dialog space and letterbox it.
+                 * Reserve only a compact control row for an intercom display.
+                 * This keeps a 16:9 video fully visible without wasting the
+                 * limited screen height on the popup header.
                  */
+                ha-dialog-header {
+                    display: none;
+                }
+
                 .content {
                     min-height: 0;
-                    height: calc(90vh - 10rem);
-                    max-height: calc(90vh - 10rem);
+                    height: calc(100vh - 4rem);
+                    max-height: calc(100vh - 4rem);
+                }
+
+                .bottom-row {
+                    padding: 4px 8px;
+                }
+
+                .deny-button,
+                .accept-button,
+                .audio-button {
+                    --mdc-icon-button-size: 48px;
+                    --mdc-icon-size: 24px;
                 }
             }
 
