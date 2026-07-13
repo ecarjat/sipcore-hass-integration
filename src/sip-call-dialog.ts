@@ -131,6 +131,7 @@ class SIPCallDialog extends LitElement {
             #remoteVideo {
                 height: 100%;
                 width: 100%;
+                object-fit: contain;
             }
 
             @media (max-width: 600px), (max-height: 600px) {
@@ -142,6 +143,17 @@ class SIPCallDialog extends LitElement {
                     --mdc-dialog-max-height: 100%;
                     --vertical-align-dialog: flex-end;
                     --ha-dialog-border-radius: 0;
+                }
+
+                /*
+                 * A 16:9 video can otherwise overflow short displays once the
+                 * dialog header and call controls are accounted for. Keep the
+                 * video inside the remaining dialog space and letterbox it.
+                 */
+                .content {
+                    min-height: 0;
+                    height: calc(90vh - 10rem);
+                    max-height: calc(90vh - 10rem);
                 }
             }
 
