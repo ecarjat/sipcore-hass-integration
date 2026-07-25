@@ -108,7 +108,8 @@ class SIPCallDialog extends LitElement {
             }
 
             ha-dialog[large],
-            ha-dialog[width="large"] {
+            ha-dialog[width="large"],
+            ha-dialog[width="full"] {
                 --dialog-content-padding: 0;
                 /*
                  * Keep the remote 16:9 image as large as the display allows
@@ -119,6 +120,21 @@ class SIPCallDialog extends LitElement {
                 --mdc-dialog-min-width: 90vw;
                 --mdc-dialog-max-width: 90vw;
                 --mdc-dialog-max-height: 90vh;
+            }
+
+            /* A configured large intercom popup is a kiosk call view: give
+             * the video all remaining height and keep controls below it. */
+            ha-dialog[width="full"] .call-container {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                min-height: 0;
+            }
+
+            ha-dialog[width="full"] .content {
+                flex: 1;
+                height: auto;
+                min-height: 0;
             }
 
             ha-camera-stream {
@@ -498,9 +514,9 @@ class SIPCallDialog extends LitElement {
                 </ha-dialog>
             ` : ``}
 
-            <ha-dialog ?open=${this.open} @closed=${
+            <ha-dialog ?open=${this.open} ?flexcontent=${this.config.large} ?fullscreen=${this.config.large} @closed=${
             this.closePopup
-        } data-domain="camera" width=${this.config.large ? "large" : "medium"}>
+        } data-domain="camera" width=${this.config.large ? "full" : "medium"}>
                 <ha-dialog-header slot="header">
                     <ha-icon-button
                         data-dialog="close"
