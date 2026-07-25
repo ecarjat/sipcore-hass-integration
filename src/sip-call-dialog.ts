@@ -101,11 +101,21 @@ class SIPCallDialog extends LitElement {
 
             ha-dialog {
                 --dialog-content-padding: 0;
+                /* Home Assistant 2026+ dialog width API. */
+                --ha-dialog-width-md: 600px;
+                /* Legacy Home Assistant dialog width API. */
                 --mdc-dialog-min-width: 600px;
             }
 
-            ha-dialog[large] {
+            ha-dialog[large],
+            ha-dialog[width="large"] {
                 --dialog-content-padding: 0;
+                /*
+                 * Keep the remote 16:9 image as large as the display allows
+                 * while reserving space for the title and call controls.
+                 */
+                --ha-dialog-width-lg: min(90vw, calc((100dvh - 112px) * 16 / 9));
+                --ha-dialog-max-height: calc(100dvh - 16px);
                 --mdc-dialog-min-width: 90vw;
                 --mdc-dialog-max-width: 90vw;
                 --mdc-dialog-max-height: 90vh;
@@ -136,8 +146,13 @@ class SIPCallDialog extends LitElement {
 
             @media (max-width: 600px), (max-height: 600px) {
                 ha-dialog,
-                ha-dialog[large] {
+                ha-dialog[large],
+                ha-dialog[width="large"] {
                     --dialog-surface-margin-top: 0px;
+                    --ha-dialog-width-md: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
+                    --ha-dialog-width-lg: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
+                    --ha-dialog-min-height: 100dvh;
+                    --ha-dialog-max-height: 100dvh;
                     --mdc-dialog-min-width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
                     --mdc-dialog-max-width: calc(100vw - env(safe-area-inset-right) - env(safe-area-inset-left));
                     --mdc-dialog-min-height: 100%;
@@ -394,7 +409,7 @@ class SIPCallDialog extends LitElement {
                 <ha-dialog open @closed=${() => {
                     this.configuratorOpen = false;
                     if (!this.open) this.closePopup();
-                }} prevent-scrim-close data-domain="camera" ?large=${this.config.large}>
+                }} prevent-scrim-close data-domain="camera" width=${this.config.large ? "large" : "medium"}>
                     <ha-dialog-header slot="header">
                         <ha-icon-button
                             slot="navigationIcon"
@@ -485,7 +500,7 @@ class SIPCallDialog extends LitElement {
 
             <ha-dialog ?open=${this.open} @closed=${
             this.closePopup
-        } data-domain="camera" ?large=${this.config.large}>
+        } data-domain="camera" width=${this.config.large ? "large" : "medium"}>
                 <ha-dialog-header slot="header">
                     <ha-icon-button
                         data-dialog="close"
