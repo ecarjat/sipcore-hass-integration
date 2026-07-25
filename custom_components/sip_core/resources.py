@@ -1,6 +1,8 @@
 
 
 import logging
+from hashlib import sha256
+from pathlib import Path
 from homeassistant.components.lovelace.resources import (
     ResourceStorageCollection,
     ResourceYAMLCollection,
@@ -17,6 +19,13 @@ from homeassistant.core import HomeAssistant
 logger = logging.getLogger(__name__)
 
 
+def resource_url() -> str:
+    """Return a cache-busting URL for the compiled frontend module."""
+    asset = Path(__file__).parent / "www" / "sip_core.js"
+    digest = sha256(asset.read_bytes()).hexdigest()[:12]
+    return f"{JS_URL_PATH}?v={digest}"
+
+
 async def add_resources(hass: HomeAssistant):
     """Add SIP Core resources to Lovelace."""
 
@@ -29,14 +38,12 @@ async def add_resources(hass: HomeAssistant):
             logger.debug("Manually loaded resources")
             resources.loaded = True
 
-        res_id = next(
-            (
-                data[CONF_ID]
-                for data in resources.async_items()
-                if data[CONF_URL] == JS_URL_PATH
-            ),
+        resource = next(
+            (data for data in resources.async_items() if data[CONF_URL].split("?", 1)[0] == JS_URL_PATH),
             None,
         )
+        res_id = resource[CONF_ID] if resource else None
+        versioned_url = resource_url()
 
         if res_id is None:
             logger.info("Registering SIP Core module in Lovelace resources")
@@ -45,9 +52,16 @@ async def add_resources(hass: HomeAssistant):
                 return False # TODO: Return error for user?
             else:
                 data = await resources.async_create_item(
-                    {CONF_RESOURCE_TYPE_WS: "module", CONF_URL: JS_URL_PATH}
+                    {CONF_RESOURCE_TYPE_WS: "module", CONF_URL: versioned_url}
                 )
                 logger.debug(f"Registered SIP Core module with resource ID {data[CONF_ID]}")
+        elif resource[CONF_URL] != versioned_url and isinstance(resources, ResourceStorageCollection):
+            logger.info("Updating SIP Core module URL to refresh the frontend cache")
+            await resources.async_delete_item(res_id)
+            data = await resources.async_create_item(
+                {CONF_RESOURCE_TYPE_WS: "module", CONF_URL: versioned_url}
+            )
+            logger.debug(f"Updated SIP Core module resource ID {data[CONF_ID]}")
         else:
             logger.debug(f"module already registered with resource ID {res_id}")
 
@@ -68,7 +82,7 @@ async def remove_resources(hass: HomeAssistant):
             (
                 data[CONF_ID]
                 for data in resources.async_items()
-                if data[CONF_URL] == JS_URL_PATH
+                if data[CONF_URL].split("?", 1)[0] == JS_URL_PATH
             ),
             None,
         )
