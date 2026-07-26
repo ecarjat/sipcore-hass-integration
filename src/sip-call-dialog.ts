@@ -155,13 +155,18 @@ class SIPCallDialog extends LitElement {
             }
 
             #remoteVideo {
-                height: 100%;
+                /* SIP cameras such as intercom2 publish a 4:3 stream. The
+                 * call dialog itself is much wider, so a 100% x 100% video
+                 * box makes Chromium crop it as a cover image. Size from the
+                 * available height instead and retain the camera's ratio. */
+                aspect-ratio: 4 / 3;
+                height: 100% !important;
                 max-height: 100%;
                 max-width: 100%;
                 min-height: 0;
                 min-width: 0;
-                object-fit: contain;
-                width: 100%;
+                object-fit: contain !important;
+                width: auto !important;
             }
 
             @media (max-width: 600px), (max-height: 600px) {
