@@ -307,14 +307,23 @@ class SIPCallDialog extends LitElement {
                     ui: false, // Disable custom UI buttons
                 });
                 element.hass = this.hass;
-                // Disable native video controls
-                if (element.video) {
-                    element.video.controls = false;
-                }
                 // Trigger connection
                 if (element.onconnect) {
                     element.onconnect();
                 }
+            }
+
+            // WebRTC Camera creates this asynchronously, so apply these
+            // rules on every update rather than only during configuration.
+            if (element.video) {
+                // The WebRTC Camera card owns this video inside its shadow
+                // root, so the SIP dialog's #remoteVideo CSS cannot style it.
+                // Apply the fit rule to the actual element to keep 4:3 camera
+                // frames visible in the much wider call dialog.
+                element.video.controls = false;
+                element.video.style.setProperty("object-fit", "contain", "important");
+                element.video.style.setProperty("width", "100%", "important");
+                element.video.style.setProperty("height", "100%", "important");
             }
         }
     }
