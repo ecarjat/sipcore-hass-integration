@@ -300,11 +300,19 @@ class SIPCallDialog extends LitElement {
     updateWebRTCCamera() {
         const element = this.renderRoot.querySelector('webrtc-camera') as any;
         if (element && this.currentCamera) {
-            if (!element.config || element.config.entity !== this.currentCamera) {
+            const cameraStyle = "video { object-fit: contain; }";
+            if (
+                !element.config ||
+                element.config.entity !== this.currentCamera ||
+                element.config.style !== cameraStyle
+            ) {
                 element.setConfig({
                     entity: this.currentCamera,
                     muted: true,
                     ui: false, // Disable custom UI buttons
+                    // WebRTC Camera's supported way to control its shadow-DOM
+                    // video. Preserve the complete 4:3 intercom camera frame.
+                    style: cameraStyle,
                 });
                 element.hass = this.hass;
                 // Trigger connection
