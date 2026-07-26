@@ -156,8 +156,12 @@ class SIPCallDialog extends LitElement {
 
             #remoteVideo {
                 height: 100%;
-                width: 100%;
+                max-height: 100%;
+                max-width: 100%;
+                min-height: 0;
+                min-width: 0;
                 object-fit: contain;
+                width: 100%;
             }
 
             @media (max-width: 600px), (max-height: 600px) {
@@ -251,6 +255,8 @@ class SIPCallDialog extends LitElement {
                 justify-content: center;
                 align-items: center;
                 min-height: 300px;
+                min-width: 0;
+                overflow: hidden;
                 width: 100%;
             }
 
